@@ -38,7 +38,10 @@ To evaluate whether ESCC-related SNPs are significantly enriched in specific gen
 For the enrichment significance analysis of LD SNPs, only the first round of experiments was conducted. Unlike the analysis of ESCC SNPs, 132 SNP loci were randomly selected in this case. 
 
 * **shuffle_bedpe.sh / shuffle_bed.sh / shuffle_gene.sh**
+  Code for the first experiments
+  
 * **shuffle_snp_bedpe.sh / shuffle_snp_bed.sh**
+  Code for the second experiments
 
 ### 1.3 Validate SNP-Target Gene Pairs
 * **eQTL.R**
@@ -61,3 +64,5 @@ For the enrichment significance analysis of LD SNPs, only the first round of exp
 * **Fig7.R**  TCN2 Pathway Correlations and TAM_LYVE1-Mediated Cell–Cell Communication Driving T Cell Exhaustion.
   
 * **FigS1.R** Subset annotation of myeloid cells, T cells, and NK cells.
+
+The raw data for the above plotting code are available from the author upon request.
