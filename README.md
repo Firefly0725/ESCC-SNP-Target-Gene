@@ -35,6 +35,8 @@ To evaluate whether ESCC-related SNPs are significantly enriched in specific gen
 
 (3) This process was repeated 10,000 times, with overlap counts recorded for each iteration.
 
+For the enrichment significance analysis of LD SNPs, only the first round of experiments was conducted. Unlike the analysis of ESCC SNPs, 132 SNP loci were randomly selected in this case. 
+
 * **shuffle_bedpe.sh / shuffle_bed.sh / shuffle_gene.sh**
 * **shuffle_snp_bedpe.sh / shuffle_snp_bed.sh**
 
