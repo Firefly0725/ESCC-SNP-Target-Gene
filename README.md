@@ -42,6 +42,15 @@ For the enrichment significance analysis of LD SNPs, only the first round of exp
 
 ### 1.3 Validate SNP-Target Gene Pairs
 * **eQTL.R**
+
   eQTL validation was performed using esophageal tissue data from the GTEx database (v8). The get_qtls function from the R package Qtlizer was employed to batch-retrieve eQTL information for the SNPs used in this study, returning associated genes and significance levels for each SNP across all available tissues. The eQTL results were then inner-joined with the originally identified SNP–target gene pairs based on SNP identifier and gene symbol, retaining only concordant records. The resulting associations were further filtered to include only those containing the keyword "Esophagus Mucosa" and "Esophagus Muscularis" in the tissue field, ensuring that the regulatory evidence was specific to esophageal tissue.
 
 ## 2 Figure
+* **Fig1.R**  Selection of ESCC-Associated SNPs and Association Analysis with Biological Markers.
+* **Fig2.R**  Identification and Validation of ESCC SNP–Target Gene Pairs.
+* **Fig3.R**  Characterization of LD SNPs and Analysis of Their Interactions with Target Genes.
+* **Fig4.R**  Regulatory Effects of rs4072037 and Its LD Proxy SNP on Target Genes (use IGV).
+* **Fig5.R**  Differential Expression Analysis of Candidate Target Genes and Prognostic Validation of TCN2.
+* **Fig6.R**  Single-Cell Dissection of TCN2 Expression in the ESCC Microenvironment.
+* **Fig7.R**  TCN2 Pathway Correlations and TAM_LYVE1-Mediated Cell–Cell Communication Driving T Cell Exhaustion.
+* **FigS1.R** Subset annotation of myeloid cells, T cells, and NK cells.
