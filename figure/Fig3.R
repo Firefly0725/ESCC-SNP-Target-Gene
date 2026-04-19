@@ -19,7 +19,7 @@ data$category <- factor(data$category,
                                    "As an ESCC SNP"))
 
 p <- ggplot(data, aes(x = "", y = value, fill = category)) +
-  geom_bar(stat = "identity", width = 1) +  # 添加扇形黑色边框
+  geom_bar(stat = "identity", width = 1) +  
   coord_polar(theta = "y") +
   theme_void() +
   geom_text(aes(label = value), 
@@ -266,7 +266,7 @@ p1 <- Heatmap(data,cluster_rows = F,
         border = 'black',
         show_heatmap_legend = F,
         top_annotation =top_anno,
-        row_names_side = "left",      # 将行名称显示在左侧
+        row_names_side = "left",     
         row_names_gp = gpar(fontsize = 14))
 
 data1 <- result_type3
@@ -297,7 +297,7 @@ p2 <- Heatmap(data1,cluster_rows = F,
         border = 'black',
         show_heatmap_legend = F,
         top_annotation =top_anno,
-        row_names_side = "left",      # 将行名称显示在左侧
+        row_names_side = "left",    
         row_names_gp = gpar(fontsize = 14))
 
 
