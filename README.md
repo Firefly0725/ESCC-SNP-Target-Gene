@@ -47,10 +47,17 @@ For the enrichment significance analysis of LD SNPs, only the first round of exp
 
 ## 2 Figure
 * **Fig1.R**  Selection of ESCC-Associated SNPs and Association Analysis with Biological Markers.
+  
 * **Fig2.R**  Identification and Validation of ESCC SNP–Target Gene Pairs.
+  
 * **Fig3.R**  Characterization of LD SNPs and Analysis of Their Interactions with Target Genes.
+  
 * **Fig4.R**  Regulatory Effects of rs4072037 and Its LD Proxy SNP on Target Genes (use IGV).
+  
 * **Fig5.R**  Differential Expression Analysis of Candidate Target Genes and Prognostic Validation of TCN2.
+  
 * **Fig6.R**  Single-Cell Dissection of TCN2 Expression in the ESCC Microenvironment.
+  
 * **Fig7.R**  TCN2 Pathway Correlations and TAM_LYVE1-Mediated Cell–Cell Communication Driving T Cell Exhaustion.
+  
 * **FigS1.R** Subset annotation of myeloid cells, T cells, and NK cells.
