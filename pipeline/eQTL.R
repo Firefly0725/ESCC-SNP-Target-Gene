@@ -61,7 +61,7 @@ snps <- unique(type$V4)
 result <- get_qtls(snps)
 matched <- inner_join(type, result, by = c("V4" = "query_term", "V5" = "gene"))
 matched <- matched %>%
-  filter(grepl("Esophagus", tissue, ignore.case = TRUE))
+  filter(grepl("Esophagus - Mu", tissue, ignore.case = TRUE))
 
 
 biomarkers <- unique(matched$V5)
