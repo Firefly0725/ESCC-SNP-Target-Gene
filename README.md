@@ -68,8 +68,18 @@ For the enrichment significance analysis of LD SNPs, only the first round of exp
   
 * **Fig6.R**  Single-Cell Dissection of TCN2 Expression in the ESCC Microenvironment.
   
-* **Fig7.R**  TCN2 Pathway Correlations and TAM_LYVE1-Mediated Cell–Cell Communication Driving T Cell Exhaustion.
+* **Fig7.R**  Transcriptional characteristics and cell–cell communication patterns of TCN2-high TAM_LYVE1 macrophages.
   
-* **FigS1.R** Subset annotation of myeloid cells, T cells, and NK cells.
+* **FigS1.R**  Subset annotation of myeloid cells, T cells, and NK cells.
+
+* **FigS2.R**  Regulatory evidence linking the ESCC susceptibility variant rs5753220 to TCN2.
+
+* **FigS3.R**  Validation of the TAM-LYVE1-like macrophage signature in the independent GSE160269 scRNA-seq cohort.
+
+* **FigS4.R**  Characterization of a TCN2-associated immunoregulatory state in TAM_LYVE1 macrophages.
+
+* **FigS5.R**  Validation of the TCN2-associated transcriptional state in TAM-LYVE1-like macrophages using the independent GSE160269 scRNA-seq cohort.
+
+* **FigS6.R**  Sample-level validation of differential ligand–receptor communication programs associated with TCN2-high and TCN2-low TAM_LYVE1 states.
 
 The raw data for the above plotting code are available from the author upon request.
