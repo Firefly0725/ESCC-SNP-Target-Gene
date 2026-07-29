@@ -12,12 +12,12 @@ library(tidyr)
 library(ggpubr)
 
 rm(list = ls()); gc()
-ORIGINAL_DIR <- "D:/大学的资料/R/ESCC/data/FigS4"
+ORIGINAL_DIR <- ""
 setwd(ORIGINAL_DIR)
 
 
 #--------S4A--------
-tam <- readRDS(file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group.RDS")
+tam <- readRDS(file = "tam_group.RDS")
 p1 <- FeaturePlot(
   tam,
   features = "TCN2",
@@ -116,8 +116,8 @@ ggsave(file.path("FigS4B-TCN2expression.png"), p, width = 8, height = 4, dpi = 3
 
 
 #--------S4C--------
-tam <- readRDS(file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group_pos.RDS")
-tam_1 <- readRDS(file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group.RDS")
+tam <- readRDS(file = "tam_group_pos.RDS")
+tam_1 <- readRDS(file = "tam_group.RDS")
 
 group_pos <- tam$tam_group
 group_cluster <- tam_1$tam_group
@@ -214,11 +214,11 @@ dev.off()
 
 
 #--------S4D--------
-tam <- readRDS(file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group_pos.RDS")
+tam <- readRDS(file = "tam_group_pos.RDS")
 options(stringsAsFactors = FALSE)
 set.seed(20260713)
 
-input_gmt <- "D:/大学的资料/R/ESCC/data/Fig7-new/c2.cp.reactome.v2026.1.Hs.symbols.gmt"
+input_gmt <- "c2.cp.reactome.v2026.1.Hs.symbols.gmt"
 
 tam_group <- data.frame(
   barcode = colnames(tam),
@@ -275,11 +275,10 @@ gsea_positive <- gsea[order(gsea$padj, -abs(gsea$NES)), ]
 gsea_sig <- gsea[!is.na(gsea$padj) & gsea$padj < 0.05, ]
 
 
-#计算negative组
 options(stringsAsFactors = FALSE)
 set.seed(20260713)
 
-input_gmt <- "D:/大学的资料/R/ESCC/data/Fig7-new/c2.cp.reactome.v2026.1.Hs.symbols.gmt"
+input_gmt <- "c2.cp.reactome.v2026.1.Hs.symbols.gmt"
 
 tam_group <- data.frame(
   barcode = colnames(tam),
@@ -399,7 +398,6 @@ plot_df <- gsea %>%
     )
   )
 
-# 检查筛选后的数据
 print(plot_df)
 
 p1 <- ggplot(
