@@ -2,7 +2,7 @@ library(tidyverse)
 library(pheatmap)
 
 df <- read.csv(
-  "D:/大学的资料/R/ESCC/data/cellchat/sample_specific/TCN_LR_mean_score_results/TCN_incoming_delta_matrix.csv",
+  "TCN_incoming_delta_matrix.csv",
   check.names = FALSE
 )
 
@@ -69,7 +69,7 @@ colors <- colorRampPalette(
 
 
 
-pdf("D:/大学的资料/R/ESCC/data/FigS6/heatmap_as_receiver.pdf",
+pdf("heatmap_as_receiver.pdf",
     height = 4, width = 5.8)
 pheatmap(
   heatmap_df,
