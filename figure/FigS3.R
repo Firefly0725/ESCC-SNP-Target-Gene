@@ -6,9 +6,9 @@ library(tidyr)
 library(ggpubr)
 
 rm(list = ls()); gc()
-ORIGINAL_DIR <- "D:/大学的资料/R/ESCC/data/FigS3"
+ORIGINAL_DIR <- " "
 setwd(ORIGINAL_DIR)
-scdata <- readRDS(file = "D:/大学的资料/R/ESCC/data/scRNA_60samples/scdata.RDS")
+scdata <- readRDS(file = "scdata.RDS")
 
 #--------FigA--------
 p1 <- DimPlot(scdata, 
@@ -60,14 +60,14 @@ feature_plot <- function(genename){
     min.cutoff = "q05",
     max.cutoff = "q95"
   ) +
-    labs(x = NULL, y = NULL, colour = genename, title = NULL) +  # 移除坐标轴标题
+    labs(x = NULL, y = NULL, colour = genename, title = NULL) +  
     theme_classic() +
     theme(
       plot.title = element_text(size = 14, hjust = 0.5),
-      axis.title = element_blank(),           # 移除坐标轴标题
-      axis.text = element_blank(),            # 移除坐标轴刻度标签
-      axis.ticks = element_blank(),           # 移除坐标轴刻度线
-      axis.line = element_blank(),            # 移除坐标轴线
+      axis.title = element_blank(),           
+      axis.text = element_blank(),      
+      axis.ticks = element_blank(),        
+      axis.line = element_blank(),        
       legend.text = element_text(size = 14),
       legend.title = element_text(size = 14)
     )
@@ -86,7 +86,6 @@ ggsave(
   height = 3,
   dpi = 300
 )
-
 
 
 #--------FigC--------
@@ -165,5 +164,3 @@ p1 <- VlnPlot(
   )
 p1
 ggsave(file.path("Fig3SC-1_BoxPlot.pdf"), p1, width = 6.5, height = 4, bg = "white")
-
-#--------FigD--------
