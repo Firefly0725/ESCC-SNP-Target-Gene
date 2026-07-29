@@ -257,3 +257,262 @@ print(combined_plot)
 ggsave(file.path("Fig6F_M1_M2_sig.png"), combined_plot, width = 9, height = 7, dpi = 300, bg = "white")
 ggsave(file.path("Fig6F_M1_M2_sig.pdf"), combined_plot, width = 9, height = 7, bg = "white")
 
+
+#--------6G--------
+scdata <- readRDS("scdata.RDS")
+
+DimPlot(scdata, group.by = "tam_group") +
+  ggtitle("UMAP of Samples") +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 16),
+    legend.text = element_text(size = 15)
+  )
+my_colors <- c("TAM-LYVE1-like TAM" = "#B30000",
+               "Other Myeloid" = "#737373")
+p1 <- DimPlot(scdata, group.by = "tam_group", cols = my_colors, label.size = 5) +
+  ggtitle("GSE160269") +
+  labs(x = "UMAP1", y = "UMAP2") +
+  theme(
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 14),
+    legend.text = element_text(size = 14),
+    plot.title = element_text(size = 14, hjust = 0.5),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  ) +
+  guides(color = guide_legend(ncol = 1, override.aes = list(size = 5)))
+p1
+
+ggsave("Fig6G_GSE160269.png", p1, width = 4, height = 4, dpi = 300, bg = "white")
+
+
+
+#--------6H--------
+scdata$TAM_group <- paste0(scdata$group, "_", scdata$tam_group)
+scdata$TAM_group <- factor(scdata$TAM_group)
+
+p1 <- VlnPlot(scdata, features = "TCN2", group.by = "TAM_group", pt.size = 0) +
+  theme_classic() +
+  labs(x = "", y = "TCN2 expression") +
+  scale_fill_manual(values = c(
+    "T_TAM-LYVE1-like TAM" = "#B30000",
+    "N_TAM-LYVE1-like TAM" = "#737373",
+    "T_Other Myeloid" = "#737373",
+    "N_Other Myeloid" = "#737373"
+  )) +
+  scale_x_discrete(
+    limits = c("T_TAM-LYVE1-like TAM", "N_TAM-LYVE1-like TAM",
+               "T_Other Myeloid", "N_Other Myeloid"),
+    labels = c(
+      "T_TAM-LYVE1-like TAM" = "Tumor\nTAM-LYVE1-like TAM",
+      "N_TAM-LYVE1-like TAM" = "Normal\nTAM-LYVE1-like TAM",
+      "T_Other Myeloid" = "Tumor\nOther Myeloid",
+      "N_Other Myeloid" = "Normal\nOther Myeloid"
+    )
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+    axis.text.y = element_text(size = 14),
+    axis.title = element_text(size = 14),
+    legend.position = "none"
+  ) +
+  geom_boxplot(width = 0.1, position = position_dodge(0.9), outlier.shape = NA)
+p1
+
+ggsave("Fig6H_violin.pdf", p1, width = 6, height = 4.5, bg = "white")
+
+
+
+#--------6I--------
+build_tumor_myeloid_pseudobulk <- function(object, assay = "RNA",
+                                           sample_col = "sample",
+                                           group_col = "group",
+                                           tumor_label = "T",
+                                           tam_col = "tam_group",
+                                           tam_label = "TAM-LYVE1-like TAM",
+                                           other_label = "Other Myeloid",
+                                           min_cells_per_sample_group = 1L) {
+  meta <- object[[]]
+  meta$cell <- rownames(meta)
+
+  required_cols <- c(sample_col, group_col, tam_col)
+  missing_cols <- setdiff(required_cols, colnames(meta))
+  if (length(missing_cols) > 0)
+    stop("Missing metadata column(s): ", paste(missing_cols, collapse = ", "))
+
+  keep <- !is.na(meta[[group_col]]) &
+    meta[[group_col]] == tumor_label &
+    !is.na(meta[[tam_col]]) &
+    meta[[tam_col]] %in% c(tam_label, other_label)
+
+  pb_meta <- meta[keep, , drop = FALSE]
+
+  if (nrow(pb_meta) == 0)
+    stop("No cells satisfy selection criteria.")
+
+  counts <- tryCatch(
+    LayerData(object, assay = assay, layer = "counts"),
+    error = function(e) GetAssayData(object, assay = assay, slot = "counts")
+  )
+
+  common_cells <- intersect(pb_meta$cell, colnames(counts))
+  pb_meta <- pb_meta[match(common_cells, pb_meta$cell), , drop = FALSE]
+
+  pb_meta$pseudobulk_id <- paste(pb_meta[[sample_col]],
+                                 pb_meta[[tam_col]], sep = "__")
+
+  cells_by_group <- split(pb_meta$cell, pb_meta$pseudobulk_id)
+  cells_by_group <- cells_by_group[lengths(cells_by_group) >= min_cells_per_sample_group]
+
+  pb_counts <- do.call(cbind, lapply(cells_by_group, function(cell_ids)
+    Matrix::rowSums(counts[, cell_ids, drop = FALSE])
+  ))
+
+  rownames(pb_counts) <- rownames(counts)
+  colnames(pb_counts) <- names(cells_by_group)
+
+  total_umi <- colSums(pb_counts)
+
+  pb_logcpm <- log1p(sweep(pb_counts, 2, total_umi, FUN = "/") * 1e6)
+
+  pb_info <- data.frame(pseudobulk_id = names(cells_by_group))
+  pb_info$sample <- sub("__.*$", "", pb_info$pseudobulk_id)
+  pb_info$tam_group <- sub("^.*__", "", pb_info$pseudobulk_id)
+  pb_info$group <- tumor_label
+  pb_info$n_cells <- lengths(cells_by_group)
+  pb_info$total_umi <- as.numeric(total_umi)
+
+  tam_cols <- pb_info$pseudobulk_id[pb_info$tam_group == tam_label]
+  other_cols <- pb_info$pseudobulk_id[pb_info$tam_group == other_label]
+
+  list(
+    counts_all = pb_counts,
+    logCPM_all = pb_logcpm,
+    counts_TAM_LYVE1 = pb_counts[, tam_cols, drop = FALSE],
+    logCPM_TAM_LYVE1 = pb_logcpm[, tam_cols, drop = FALSE],
+    counts_Other_Myeloid = pb_counts[, other_cols, drop = FALSE],
+    logCPM_Other_Myeloid = pb_logcpm[, other_cols, drop = FALSE],
+    sample_metadata = pb_info,
+    selected_cells = pb_meta$cell
+  )
+}
+
+pb <- build_tumor_myeloid_pseudobulk(
+  object = scdata,
+  assay = "RNA",
+  sample_col = "sample",
+  group_col = "group",
+  tumor_label = "T",
+  tam_col = "tam_group",
+  tam_label = "TAM-LYVE1-like TAM",
+  other_label = "Other Myeloid",
+  min_cells_per_sample_group = 10
+)
+
+logCPM_TAM_LYVE1 <- pb$logCPM_TAM_LYVE1
+logCPM_Other_Myeloid <- pb$logCPM_Other_Myeloid
+
+if (!"TCN2" %in% rownames(logCPM_TAM_LYVE1) ||
+    !"TCN2" %in% rownames(logCPM_Other_Myeloid)) {
+  stop("TCN2 is absent from one or both matrices.")
+}
+
+colnames(logCPM_TAM_LYVE1) <- sub("__.*$", "", colnames(logCPM_TAM_LYVE1))
+colnames(logCPM_Other_Myeloid) <- sub("__.*$", "", colnames(logCPM_Other_Myeloid))
+
+common_samples <- intersect(colnames(logCPM_TAM_LYVE1),
+                            colnames(logCPM_Other_Myeloid))
+
+logCPM_TAM_LYVE1 <- logCPM_TAM_LYVE1[, common_samples, drop = FALSE]
+logCPM_Other_Myeloid <- logCPM_Other_Myeloid[, common_samples, drop = FALSE]
+
+tcn2_df <- data.frame(
+  sample = common_samples,
+  `TAM-LYVE1-like TAM` = as.numeric(logCPM_TAM_LYVE1["TCN2", common_samples]),
+  `Other Myeloid` = as.numeric(logCPM_Other_Myeloid["TCN2", common_samples]),
+  check.names = FALSE
+)
+
+tcn2_long <- tcn2_df %>%
+  pivot_longer(
+    cols = c("TAM-LYVE1-like TAM", "Other Myeloid"),
+    names_to = "cell_group",
+    values_to = "TCN2"
+  )
+
+cell_number_df <- pb$sample_metadata %>%
+  transmute(sample, cell_group = tam_group, n_cells) %>%
+  filter(sample %in% common_samples,
+         cell_group %in% c("Other Myeloid", "TAM-LYVE1-like TAM"))
+
+tcn2_long <- tcn2_long %>%
+  left_join(cell_number_df, by = c("sample", "cell_group"))
+
+tcn2_long$cell_group <- factor(
+  tcn2_long$cell_group,
+  levels = c("TAM-LYVE1-like TAM", "Other Myeloid")
+)
+
+wilcox_result <- wilcox.test(
+  tcn2_df[["TAM-LYVE1-like TAM"]],
+  tcn2_df[["Other Myeloid"]],
+  paired = TRUE,
+  exact = FALSE
+)
+
+wilcox_result
+
+ymin <- min(tcn2_long$TCN2, na.rm = TRUE)
+ymax <- max(tcn2_long$TCN2, na.rm = TRUE)
+yrange <- ymax - ymin
+
+p <- ggplot(tcn2_long, aes(x = cell_group, y = TCN2)) +
+  geom_boxplot(
+    aes(fill = cell_group),
+    width = 0.52,
+    outlier.shape = NA,
+    alpha = 0.75,
+    color = "black"
+  ) +
+  geom_line(aes(group = sample),
+            color = "grey60",
+            alpha = 0.6) +
+  geom_point(
+    aes(size = n_cells, fill = cell_group),
+    shape = 21,
+    color = "black",
+    stroke = 0.4
+  ) +
+  stat_compare_means(
+    paired = TRUE,
+    method = "wilcox.test",
+    label = "p.format",
+    label.y = ymax + 0.035 * yrange,
+    size = 5
+  ) +
+  scale_fill_manual(values = c(
+    "TAM-LYVE1-like TAM" = "#B30000",
+    "Other Myeloid" = "#737373"
+  )) +
+  scale_size_continuous(name = "Number of cells", range = c(1.5, 4)) +
+  scale_y_continuous(
+    limits = c(ymin - 0.01 * yrange, ymax + 0.09 * yrange),
+    expand = expansion(mult = c(0, 0))
+  ) +
+  theme_classic() +
+  labs(x = NULL, y = "TCN2 logCPM", fill = NULL) +
+  guides(
+    fill = "none",
+    size = guide_legend(override.aes = list(fill = "grey80", alpha = 1))
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+    axis.text.y = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    legend.text = element_text(size = 14)
+  )
+p
+
+ggsave("Fig6I_boxPlot.pdf", p, width = 4, height = 4.5, bg = "white")
