@@ -7,10 +7,10 @@ library(ggpubr)
 library(harmony)
 
 rm(list = ls()); gc()
-ORIGINAL_DIR <- "D:/大学的资料/R/ESCC/data/FigS5"
+ORIGINAL_DIR <- ""
 setwd(ORIGINAL_DIR)
 
-scdata <- readRDS(file = "D:/大学的资料/R/ESCC/data/scRNA_60samples/scdata.RDS")
+scdata <- readRDS(file = "scdata.RDS")
 tam <- subset(scdata, subset = TAM_group == "T_TAM-LYVE1-like TAM")
 tam <- NormalizeData(
   tam,
@@ -126,11 +126,11 @@ tam_group <- data.frame(
   barcode = colnames(tam),
   tam_group = tam$tam_group
 )
-save(tam_group, file = "D:/大学的资料/R/ESCC/data/TCN2_group_result_60samples.Rdata")
-saveRDS(tam, file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group_60samples.RDS")
+save(tam_group, file = "TCN2_group_result_60samples.Rdata")
+saveRDS(tam, file = "tam_group_60samples.RDS")
 
-#--------S4A--------
-tam <- readRDS(file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group_60samples.RDS")
+#--------S5A--------
+tam <- readRDS(file = tam_group_60samples.RDS")
 tam <- RenameIdents(
   tam,
   "TCN2-low" = "TCN2-low TAM_LYVE1",
@@ -257,11 +257,11 @@ ggsave(
 
 #--------S5C--------
 #通路分析
-tam <- readRDS(file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/tam_group_60samples.RDS")
+tam <- readRDS(file = "tam_group_60samples.RDS")
 options(stringsAsFactors = FALSE)
 set.seed(20260713)
 
-input_gmt <- "D:/大学的资料/R/ESCC/data/Fig7-new/c2.cp.reactome.v2026.1.Hs.symbols.gmt"
+input_gmt <- "c2.cp.reactome.v2026.1.Hs.symbols.gmt"
 
 tam_group <- data.frame(
   barcode = colnames(tam),
@@ -316,14 +316,14 @@ gsea$enriched_in <- "TCN2-high"
 gsea$leadingEdge <- vapply(gsea$leadingEdge, paste, collapse = ";", FUN.VALUE = character(1))
 gsea_high <- gsea[order(gsea$padj, -abs(gsea$NES)), ]
 gsea_sig <- gsea[!is.na(gsea$padj) & gsea$padj < 0.05, ]
-write.csv(gsea_sig, file = "D:/大学的资料/R/ESCC/data/TCN2_high_low/gsea_result_60samples.csv", row.names = F)
+write.csv(gsea_sig, file = gsea_result_60samples.csv", row.names = F)
 
 
 #计算low组
 options(stringsAsFactors = FALSE)
 set.seed(20260713)
 
-input_gmt <- "D:/大学的资料/R/ESCC/data/Fig7-new/c2.cp.reactome.v2026.1.Hs.symbols.gmt"
+input_gmt <- "c2.cp.reactome.v2026.1.Hs.symbols.gmt"
 
 tam_group <- data.frame(
   barcode = colnames(tam),
@@ -442,8 +442,6 @@ plot_df <- gsea %>%
       levels = c("TCN2-low", "TCN2-high")
     )
   )
-
-# 检查筛选后的数据
 print(plot_df)
 
 p1 <- ggplot(
